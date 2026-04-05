@@ -1,126 +1,123 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const RandomNumber = () => {
-    const [number, SetNumber]     = useState(0)
-    const [SN, SetSN]             = useState("")
-    const [revealed, setRevealed] = useState(false)
-    const [spinning, setSpinning] = useState(false)
 
-    function GenerateNum() {
-        setSpinning(true)
-        setRevealed(false)
-        SetSN("")
-        setTimeout(() => {
-            let Random = Math.floor(Math.random() * 10 + 1)
-            SetNumber(Random)
-            setSpinning(false)
-        }, 500)
+    const [number, setNumber] = useState(0)
+    const [quote, setQuote] = useState("")
+    const [history, setHistory] = useState([])
+
+    // 🔥 Load saved data on start
+    useEffect(() => {
+        const savedQuote = localStorage.getItem("quote")
+        const savedHistory = JSON.parse(localStorage.getItem("quotes")) || []
+
+        if (savedQuote) setQuote(savedQuote)
+        setHistory(savedHistory)
+    }, [])
+
+    // 🔥 Fake AI generator
+    const generateAIQuote = () => {
+        const starts = [
+            "Keep pushing",
+            "Never stop",
+            "You are building",
+            "Focus on progress",
+            "Stay consistent",
+            "Every line of code"
+        ]
+
+        const middles = [
+            "even when it's hard",
+            "because greatness takes time",
+            "one step at a time",
+            "even when no one sees it",
+            "through every bug",
+            "through every failure"
+        ]
+
+        const ends = [
+            "you will succeed.",
+            "you are becoming stronger.",
+            "your future self will thank you.",
+            "this will pay off.",
+            "you are leveling up.",
+            "great things are coming."
+        ]
+
+        return (
+            starts[Math.floor(Math.random() * starts.length)] + " " +
+            middles[Math.floor(Math.random() * middles.length)] + ", " +
+            ends[Math.floor(Math.random() * ends.length)]
+        )
     }
 
-    function Reset() {
-        SetNumber(0)
-        SetSN("")
-        setRevealed(false)
-        setSpinning(false)
+    const generate = () => {
+        const random = Math.floor(Math.random() * 10) + 1
+        setNumber(random)
     }
 
-    function Special() {
-        if (number === 1)       { SetSN("Code is like humor — when you have to explain it, it's bad.") }
-        else if (number === 2)  { SetSN("Every bug you fix makes you a better developer than yesterday.") }
-        else if (number === 3)  { SetSN("Don't fear errors — they are proof you're trying.") }
-        else if (number === 4)  { SetSN("Great developers aren't born, they're built — one bug at a time.") }
-        else if (number === 5)  { SetSN("Consistency beats talent. Code every day.") }
-        else if (number === 6)  { SetSN("The best programmers didn't quit when it got hard.") }
-        else if (number === 7)  { SetSN("Debugging is just problem-solving in disguise. Stay calm.") }
-        else if (number === 8)  { SetSN("Your only competition is who you were yesterday.") }
-        else if (number === 9)  { SetSN("Small progress is still progress — keep pushing code.") }
-        else if (number === 10) { SetSN("One day your 'I'm still learning' will turn into 'I built this.'") }
-        else                    { SetSN("Click Generate first to get your number!") }
-        setRevealed(true)
-        SetNumber("")
+    const reveal = () => {
+        if (number === 0) return
+
+        const aiQuote = generateAIQuote()
+
+        setQuote(aiQuote)
+
+        // 🔥 Save quote
+        localStorage.setItem("quote", aiQuote)
+
+        // 🔥 Save history
+        let oldQuotes = JSON.parse(localStorage.getItem("quotes")) || []
+        oldQuotes.push(aiQuote)
+
+        localStorage.setItem("quotes", JSON.stringify(oldQuotes))
+        setHistory(oldQuotes)
+
+        setNumber(0)
+    }
+
+    const reset = () => {
+        setNumber(0)
+        setQuote("")
+        setHistory([])
+
+        localStorage.removeItem("quote")
+        localStorage.removeItem("quotes")
     }
 
     return (
-        <div className="page">
+        <div className="container">
 
-            {/* Title */}
-            <div className="hero">
-                <p className="eyebrow">Dev Wisdom Engine</p>
-                <h1 className="title">
-                    <span className="t-before">Roll</span>
-                    <span className="t-divider"></span>
-                    <span className="t-after">Reveal</span>
-                </h1>
-                <p className="subtitle">Generate a number · Unlock your quote</p>
+            <h1>🎯 AI Motivation Generator</h1>
+
+            {/* Number */}
+            <div className="box">
+                <h2>{number === 0 ? "?" : number}</h2>
             </div>
 
-            {/* Card */}
-            <div className="card">
-
-                {/* BEFORE */}
-                <div className={`section ${revealed ? "section-muted" : ""}`}>
-                    <span className="section-label before-label">BEFORE</span>
-                    <div className={`number-ring ${spinning ? "ring-spin" : ""}`}>
-                        <span className="number-text">
-                            {spinning ? "?" : (number === "" ? "★" : number)}
-                        </span>
-                    </div>
-                    <div className="btn-row">
-                        <button className="btn btn-cyan" onClick={GenerateNum}>⚡ Generate</button>
-                        <button className="btn btn-ghost" onClick={Reset}>↺</button>
-                    </div>
-                </div>
-
-                {/* Divider */}
-                <div className="divider">
-                    <div className="divider-line" />
-                    <span className="divider-dot">↓</span>
-                    <div className="divider-line" />
-                </div>
-
-                {/* AFTER */}
-                <div className="section">
-                    <span className="section-label after-label">AFTER</span>
-
-                    {!revealed ? (
-                        <div className="locked">
-                            <p className="lock-hint">🔒 Generate a number first</p>
-                            <button className="btn btn-lime btn-disabled" onClick={Special}>
-                                ✦ Reveal Quote
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="quote-box">
-                            <p className="quote-text">"{SN}"</p>
-                        </div>
-                    )}
-
-                    {number !== "" && number !== 0 && !revealed && (
-                        <button className="btn btn-lime" onClick={Special}>
-                            ✦ Reveal Quote
-                        </button>
-                    )}
-                </div>
-
+            {/* Buttons */}
+            <div className="buttons">
+                <button onClick={generate}>Generate</button>
+                <button onClick={reveal}>Reveal</button>
+                <button onClick={reset}>Reset</button>
             </div>
 
-            {/* Steps */}
-            <div className="steps">
-                <div className={`step ${number !== 0 ? "step-on" : ""}`}>
-                    <div className="step-dot" />
-                    <span>Generate</span>
+            {/* Quote */}
+            {quote && (
+                <div className="quote">
+                    <p>"{quote}"</p>
                 </div>
-                <div className="step-line" />
-                <div className={`step ${revealed ? "step-on" : ""}`}>
-                    <div className="step-dot" />
-                    <span>Reveal</span>
+            )}
+
+            {/* History */}
+            {history.length > 0 && (
+                <div className="history">
+                    <h3>📜 History</h3>
+                    {history.map((q, i) => (
+                        <p key={i}>• {q}</p>
+                    ))}
                 </div>
-                <div className="step-line" />
-                <div className={`step ${revealed ? "step-on" : ""}`}>
-                    <div className="step-dot" />
-                    <span>Level Up</span>
-                </div>
-            </div>
+            )}
 
         </div>
     )
