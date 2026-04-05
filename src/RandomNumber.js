@@ -1,13 +1,10 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
 
 function RandomNumber() {
   const [number, setNumber]   = useState(0)
   const [quote, setQuote]     = useState("")
   const [history, setHistory] = useState([])
   const [state, setState]     = useState("idle")
-
-  const boxRef   = useRef(null)
-  const quoteRef = useRef(null)
 
   const quotes = {
     1:  "Code is like humor — when you have to explain it, it's bad.",
@@ -33,7 +30,7 @@ function RandomNumber() {
 
   // ── Sound ──────────────────────────────────────────────────────
   const playSound = (type) => {
-    const ctx  = new (window.AudioContext || window.webkitAudioContext)()
+    const ctx  = new (window.AudioContext || window)()
     const osc  = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
@@ -62,7 +59,7 @@ function RandomNumber() {
     }
 
     if (type === "reset") {
-      osc.type = "square"
+      osc.type = "square" 
       osc.frequency.setValueAtTime(400, ctx.currentTime)
       osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.2)
       gain.gain.setValueAtTime(0.15, ctx.currentTime)
