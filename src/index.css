@@ -290,7 +290,13 @@ body.light {
   color: orange;
 }
 .Clock{
-  border: solid 1px green;
-  margin: 10px;
-  padding: 5px;
+  border: solid 3px rgb(96, 163, 14);
+  margin: 20px;
+  text-align: center;
+  border-radius: 15px;
+  padding:10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
