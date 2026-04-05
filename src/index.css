@@ -289,3 +289,8 @@ body.light {
   font-weight: bold;
   color: orange;
 }
+.clock{
+  border: solid 1px green;
+  margin: 10px;
+  padding: 5px;
+}
